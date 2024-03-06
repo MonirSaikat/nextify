@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@uiw/react-textarea-code-editor": "^3.0.2",
     "formik": "^2.4.5",
     "next": "14.1.2",
     "react": "^18",
