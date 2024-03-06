@@ -3,21 +3,25 @@ import { PostContext } from "@/context/PostContext";
 import React, { useContext, useState } from "react";
 import styles from "@/components/posts/posts.module.css";
 import toast from "react-hot-toast";
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { ErrorMessage, Field, Form, Formik, useFormik } from "formik";
 import * as Yup from 'yup';
 
 export default function Posts() {
   const { posts, removePost, addPost, postById, updatePost } = useContext(PostContext);
   const [editId, setEditId]                                   = useState(null);
+  const [postState, setPostState] = useState({
+    title: '',
+    description: ''
+  });
 
   const editPost = (postId) => {
+    const post = postById(postId);
+    setPostState({
+      title: post?.title,
+      description: post?.description
+    });
     postById(postId);
     setEditId(postId);
-  };
-
-  const initialValues = {
-    title: '',
-    description: '',
   };
 
   const handleSubmit = (values, { resetForm }) => {
@@ -28,11 +32,11 @@ export default function Posts() {
     }
 
     if(editId) {
-      delete post.id;
-      const foundPost = postById(editId);
-      initialValues.title = foundPost.title;
-      initialValues.description = foundPost.description;
-      updatePost(editId, post);
+      updatePost(editId, values);
+      setPostState({
+        title: '',
+        description: ''
+      });
       setEditId(null);
     } else {
       addPost(post);
@@ -48,7 +52,7 @@ export default function Posts() {
   
   return (
     <div className={styles.container}>
-      <Formik enableReinitialize initialValues={initialValues} onSubmit={handleSubmit} validationSchema={postSchema}>
+      <Formik enableReinitialize initialValues={postState} onSubmit={handleSubmit} validationSchema={postSchema}>
         <Form className={styles.form}>
           <Field
             type="text"
